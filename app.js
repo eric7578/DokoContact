@@ -6,6 +6,7 @@ const favicon = require('serve-favicon')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const cookieSession = require('cookie-session')
 const index = require('./routes/index')
 const oauth2callback = require('./routes/oauth2callback')
 
@@ -21,6 +22,10 @@ app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(cookieSession({
+  secret: process.env.SESSION_SECRET,
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
