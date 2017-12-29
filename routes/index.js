@@ -1,8 +1,29 @@
 const express = require('express')
 const wrapper = require('./wrapper')
 const oauth = require('../services/oauth2')
+const contactGroup = require('../services/contactGroup')
 
 const router = express.Router()
+
+const redirectIfLogin = wrapper(async (req, res, next) => {
+  const isValid = await oauth.checkToken(req.session)
+  if (isValid) {
+    res.redirect('/search')
+  } else {
+    res.session = null
+    next()
+  }
+})
+
+const redirectIfNotLogin = wrapper(async (req, res, next) => {
+  const isValid = await oauth.checkToken(req.session)
+  if (isValid) {
+    next()
+  } else {
+    res.session = null
+    res.redirect('/')
+  }
+})
 
 /* GET home page. */
 router.get('/', redirectIfLogin, (req, res, next) => {
@@ -21,28 +42,18 @@ router.get('/oauth2callback', redirectIfLogin, wrapper(async (req, res, next) =>
   res.redirect('/search')
 }))
 
-router.get('/search', redirectIfNotLogin, (req, res) => {
-  res.json(req.session)
-})
+router.get('/search', redirectIfNotLogin, wrapper(async (req, res) => {
+  const contactGroups = await contactGroup.getContactGroups(req.session)
+  res.render('search', {
+    title: 'DokoContact',
+    contactGroups
+  })
+}))
 
-function redirectIfLogin (req, res, next) {
-  const { accessToken, expiryDate } = req.session
-  if (accessToken && expiryDate > Date.now()) {
-    res.redirect('/search')
-  } else {
-    res.session = null
-    next()
-  }
-}
-
-function redirectIfNotLogin (req, res, next) {
-  const { accessToken, expiryDate } = req.session
-  if (accessToken && expiryDate > Date.now()) {
-    next()
-  } else {
-    res.session = null
-    res.redirect('/')
-  }
+if (process.env.NODE_ENV === 'development') {
+  router.get('/peek', redirectIfNotLogin, (req, res) => {
+    res.json(req.session)
+  })
 }
 
 module.exports = router

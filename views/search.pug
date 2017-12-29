@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  form
+    div 欄位
+    div 群組
+    each contactGroup in contactGroups
+      if contactGroup.memberCount > 0
+        label
+          input(type="checkbox", name="contactGroup")
+          = contactGroup.name + "(" + contactGroup.memberCount + ")"

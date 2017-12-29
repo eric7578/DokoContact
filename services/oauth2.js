@@ -39,9 +39,20 @@ const getUserInfo = tokens => {
     .then(response => response.data)
 }
 
+const checkToken = tokens => {
+  if (tokens && tokens.accessToken) {
+    return axios
+      .get(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${tokens.accessToken}`)
+      .then(response => response.status === 200)
+  } else {
+    return Promise.resolve(false)
+  }
+}
+
 module.exports = {
   getOAuthClient,
   getAuthUrl,
   exchangeAccessToken,
-  getUserInfo
+  getUserInfo,
+  checkToken
 }
