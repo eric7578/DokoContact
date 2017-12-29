@@ -1,4 +1,5 @@
 const google = require('googleapis')
+const axios = require('axios')
 
 const getOAuthClient = () => new google.auth.OAuth2(
   process.env.CLIENT_ID,
@@ -9,7 +10,10 @@ const getOAuthClient = () => new google.auth.OAuth2(
 const getAuthUrl = () => {
   const oauth2 = getOAuthClient()
   return oauth2.generateAuthUrl({
-    scope: 'https://www.googleapis.com/auth/contacts.readonly'
+    scope: [
+      'https://www.googleapis.com/auth/contacts.readonly',
+      'https://www.googleapis.com/auth/userinfo.profile'
+    ]
   })
 }
 
@@ -25,8 +29,19 @@ const exchangeAccessToken = code => new Promise((resolve, reject) => {
   })
 })
 
+const getUserInfo = tokens => {
+  return axios
+    .get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      headers: {
+        Authorization: `${tokens.tokenType} ${tokens.accessToken}`
+      }
+    })
+    .then(response => response.data)
+}
+
 module.exports = {
   getOAuthClient,
   getAuthUrl,
-  exchangeAccessToken
+  exchangeAccessToken,
+  getUserInfo
 }
