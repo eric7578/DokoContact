@@ -44,6 +44,7 @@ const checkToken = tokens => {
     return axios
       .get(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${tokens.accessToken}`)
       .then(response => response.status === 200)
+      .catch(err => Promise.resolve(false))
   } else {
     return Promise.resolve(false)
   }
