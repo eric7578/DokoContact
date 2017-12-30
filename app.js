@@ -9,12 +9,16 @@ const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const index = require('./routes/index')
 const search = require('./routes/search')
+const contacts = require('./routes/contacts')
 
 const app = express()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug')
+if (process.env.NODE_ENV === 'development') {
+  app.locals.pretty = true;
+}
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
@@ -30,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
 app.use('/search', search)
+app.use('/contacts', contacts)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
