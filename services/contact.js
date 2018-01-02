@@ -1,8 +1,10 @@
 const axios = require('axios')
 const xml2js = require('xml2js')
 const querystring = require('querystring')
+const pathToRegexp = require('path-to-regexp')
+const _ = require('lodash')
 
-const parseXML = data => new Promise((resolve, reject) => {
+const parseXML = response => new Promise((resolve, reject) => {
   const xmlParserOptions = {
     trim: true,
     ignoreAttrs: true,
@@ -10,11 +12,31 @@ const parseXML = data => new Promise((resolve, reject) => {
     async: true,
     explicitArray: false
   }
-  xml2js.parseString(data, xmlParserOptions, (err, result) => {
+  xml2js.parseString(response.data, xmlParserOptions, (err, result) => {
     if (err) reject(err)
     else resolve(result)
   })
 })
+
+const retrieveEntry = data => _.get(data, 'feed.entry', [])
+
+const transformContactGroupId = entries => {
+  const re = pathToRegexp('http://www.google.com/m8/feeds/groups/:userMail/base/:groupId')
+  return entries.map(entry => {
+    const params = re.exec(entry.id)
+    entry.id = params[2]
+    return entry
+  })
+}
+
+const transformContactId = entries => {
+  const re = pathToRegexp('http://www.google.com/m8/feeds/contacts/:userMail/base/:contactId')
+  return entries.map(entry => {
+    const params = re.exec(entry.id)
+    entry.id = params[2]
+    return entry
+  })
+}
 
 const getContactGroups = tokens => {
   return axios
@@ -23,7 +45,9 @@ const getContactGroups = tokens => {
         Authorization: `${tokens.tokenType} ${tokens.accessToken}`
       }
     })
-    .then(response => parseXML(response.data))
+    .then(parseXML)
+    .then(retrieveEntry)
+    .then(transformContactGroupId)
 }
 
 const getPeople = (tokens, resource) => {
@@ -34,7 +58,8 @@ const getPeople = (tokens, resource) => {
         Authorization: `${tokens.tokenType} ${tokens.accessToken}`
       }
     })
-    .then(response => parseXML(response.data))
+    .then(parseXML)
+    .then(retrieveEntry)
 }
 
 const searchPeople = (tokens, term) => {
@@ -47,7 +72,9 @@ const searchPeople = (tokens, term) => {
         Authorization: `${tokens.tokenType} ${tokens.accessToken}`
       }
     })
-    .then(response => parseXML(response.data))
+    .then(parseXML)
+    .then(retrieveEntry)
+    .then(transformContactId)
 }
 
 module.exports = {

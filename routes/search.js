@@ -12,7 +12,7 @@ router.get('/', wrapper(async (req, res) => {
   const contactGroups = await contact.getContactGroups(req.session)
   res.render('search', {
     title: 'DokoContact',
-    contactGroups: _.get(contactGroups, 'feed.entry')
+    contactGroups
   })
 }))
 

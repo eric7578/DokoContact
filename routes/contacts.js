@@ -11,7 +11,7 @@ router.use(middlewares.redirectIfNotLogin)
 router.get('/', wrapper(async (req, res) => {
   if (req.query.q) {
     const contacts = await contact.searchPeople(req.session, req.query.q)
-    res.json(_.get(contacts, 'feed.entry', []))
+    res.json(contacts)
   } else {
     res.status(400).end('query term is required.')
   }
