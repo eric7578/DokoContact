@@ -64,6 +64,7 @@ const getPeople = (tokens, resource) => {
 
 const searchPeople = (tokens, term) => {
   const query = querystring.stringify({
+    v: '3.0',
     q: term
   })
   return axios
