@@ -1,8 +1,31 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.suggest-item {
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  display: -webkit-flex;
+  padding: 10px 20px;
 }
 
-a {
-  color: #00B7FF;
+.include-suggest,
+.include-group {
+  margin-right: 10px;
+}
+
+.name {
+  flex: 1;
+}
+
+.job {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.hide {
+  display: none;
+}
+
+.contact-group {
+  display: block;
 }
