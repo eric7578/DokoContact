@@ -2,8 +2,8 @@ const google = require('googleapis')
 const axios = require('axios')
 
 const getOAuthClient = () => new google.auth.OAuth2(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
+  process.env.OAUTH_ID,
+  process.env.OAUTH_SECRET,
   process.env.REDIRECT_URL
 )
 
