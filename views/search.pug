@@ -3,20 +3,20 @@ extends layout
 block content
   .form-group
     label(for='search') 關鍵字快篩
-    input#search.form-control(type='text', name='search', placeholder='輸入關鍵字')
+    input#search.form-control(type='text', placeholder='輸入關鍵字')
     small.form-text.text-muted 關鍵字會搜尋所有欄位，姓名、地址、組織等。
-  form(method='get', action='/search')
+  form(method='post', action='/search')
     .suggests
       label.suggest-item.template.hide
-        input.include-suggest(type='checkbox', name='people')
+        input.include-suggest(type='checkbox', name='contacts[]')
         span.name
         span.job
     if contactGroups
       label 選擇群組所有成員
       .form-group
-        each contactGroup in contactGroups
+        each contactGroup, index in contactGroups
           label.contact-group
-            input.include-group(type='checkbox', name='contactGroup[]' value=contactGroup.id)
+            input.include-group(type='checkbox', name='groups[]' value=contactGroup.id)
             = contactGroup.title
     button.btn.btn-primary(type=submit) 送出
 

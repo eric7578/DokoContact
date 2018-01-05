@@ -47,13 +47,22 @@ const getContactGroups = tokens => {
     })
     .then(parseXML)
     .then(retrieveEntry)
-    .then(transformContactGroupId)
 }
 
-const getPeople = (tokens, resource) => {
-  const personFields = ['names', 'addresses', 'phoneNumbers', 'organizations']
+const getPeople = (tokens, contactId) => {
   return axios
-    .get(`https://people.googleapis.com/v1/${resource}?personFields=${personFields.join(',')}`, {
+    .get(contactId, {
+      headers: {
+        Authorization: `${tokens.tokenType} ${tokens.accessToken}`
+      }
+    })
+    .then(parseXML)
+    .then(data => data.entry)
+}
+
+const getPeopleUnderContactGroup = (tokens, groupId) => {
+  return axios
+    .get(`https://www.google.com/m8/feeds/contacts/default/full?group=${groupId}&max-results=10000`, {
       headers: {
         Authorization: `${tokens.tokenType} ${tokens.accessToken}`
       }
@@ -75,11 +84,11 @@ const searchPeople = (tokens, term) => {
     })
     .then(parseXML)
     .then(retrieveEntry)
-    .then(transformContactId)
 }
 
 module.exports = {
   getContactGroups,
   getPeople,
+  getPeopleUnderContactGroup,
   searchPeople
 }

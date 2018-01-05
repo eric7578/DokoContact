@@ -16,4 +16,24 @@ router.get('/', wrapper(async (req, res) => {
   })
 }))
 
+router.post('/', wrapper(async (req, res) => {
+  const contactIds = _.get(req, 'body.contacts', [])
+  const groupIds = _.get(req, 'body.groups', [])
+
+  let contacts = await Promise.all(
+    contactIds.map(contactId =>
+      contact.getPeople(req.session, contactId)
+    )
+  )
+
+  let contactInGroups = await Promise.all(
+    groupIds.map(groupId =>
+      contact.getPeopleUnderContactGroup(req.session, groupId)
+    )
+  )
+  contactInGroups = _.flatten(contactInGroups)
+
+  res.json({ contacts, contactInGroups })
+}))
+
 module.exports = router
