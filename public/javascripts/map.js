@@ -2,7 +2,7 @@ function initialized () {
   var bounds = window.PINS.reduce(function (bounds, pin) {
     bounds.extend(pin.position)
     return bounds
-  }, new google.maps.LatLngBounds())
+  }, new google.maps.LatLngBounds());
 
   // 取得所有點的中心位置
   var center = bounds.getCenter();
@@ -45,7 +45,9 @@ function getBoundsZoomLevel (bounds) {
 function createMap (center, zoom) {
   var map = new google.maps.Map(document.getElementById('map'), {
     center: center,
-    zoom: zoom
+    zoom: zoom,
+    mapTypeControl: false,
+    scaleControl: false
   });
 
   var infoWindow = new google.maps.InfoWindow();
@@ -78,7 +80,7 @@ function createMap (center, zoom) {
       map: map,
       label: pin.name,
       position: pin.position
-    })
+    });
 
     marker.addListener('click', function (e) {
       $name.textContent = pin.name;
@@ -88,15 +90,15 @@ function createMap (center, zoom) {
 
       infoWindow.open(map, marker);
     });
-  })
+  });
 
-  return map
+  return map;
 }
 
 function insertInfo ($node, value, seperator) {
-  seperator = seperator || ''
+  seperator = seperator || '';
   if (Array.isArray(value)) {
-    value = value.join(seperator)
+    value = value.join(seperator);
   }
 
   if (value) {
