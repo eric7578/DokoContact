@@ -34,9 +34,11 @@ router.post('/', wrapper(async (req, res) => {
   )
   contactInGroups = _.flatten(contactInGroups)
 
-  const generatedMap = await map.makeMap(contactInGroups)
+  const pins = await map.makePins(contactInGroups)
 
-  res.json(generatedMap)
+  res.render('map-view', {
+    pins
+  })
 }))
 
 module.exports = router

@@ -1,0 +1,12 @@
+extends layout
+
+block css
+  link(rel='stylesheet', href='/stylesheets/map.css')
+
+block scripts
+  #map
+  script(src='/javascripts/map.js')
+  script(src='/javascripts/map-view.js')
+  script
+    | var PINS = !{JSON.stringify(pins)};
+  script(src='https://maps.googleapis.com/maps/api/js?key=' + process.env.MAPS_KEY + '&callback=initialized')

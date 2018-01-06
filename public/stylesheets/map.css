@@ -1,0 +1,33 @@
+html, body {
+  height: 100%;
+}
+
+#map {
+  height: 100%;
+}
+
+.info-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 8px 0;
+}
+
+.info-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.info-item {
+  font-size: 12px;
+}
+
+.info-item.job {
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.info-item.phone, .info-item.address {
+  color: #666;
+  margin: 3px 0;
+}

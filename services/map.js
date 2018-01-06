@@ -5,7 +5,7 @@ const { Map } = require('../models')
 
 const fromAddressToLatLng = address => {
   const query = stringify({
-    key: process.env.API_SECRET,
+    key: process.env.GEOCODING_KEY,
     address
   })
   return axios
@@ -24,8 +24,10 @@ const makePin = contact => {
   return fromAddressToLatLng(contact['gd:postalAddress'])
     .then(geocode => {
       return {
-        lat: _.get(geocode, 'geometry.location.lat'),
-        lng: _.get(geocode, 'geometry.location.lng'),
+        position: {
+          lat: _.get(geocode, 'geometry.location.lat'),
+          lng: _.get(geocode, 'geometry.location.lng')
+        },
         name: contact.title,
         companyName: _.get(contact, ['gd:organization', 'gd:orgName']),
         jobTitle: _.get(contact, ['gd:organization', 'gd:orgTitle']),
@@ -35,18 +37,14 @@ const makePin = contact => {
     })
 }
 
-const makeMap = async contacts => {
-  const map = new Map()
-  map.created = Date.now()
-  map.pins = await Promise.all(
+const makePins = async contacts => {
+  return Promise.all(
     contacts
       .filter(contact => contact['gd:postalAddress'])
       .map(contact => makePin(contact))
   )
-  await map.save()
-  return map.toJSON()
 }
 
 module.exports = {
-  makeMap
+  makePins
 }
