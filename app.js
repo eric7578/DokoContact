@@ -9,7 +9,9 @@ const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
 const index = require('./routes/index')
 const search = require('./routes/search')
+const maps = require('./routes/maps')
 const contacts = require('./routes/contacts')
+const middlewares = require('./routes/middlewares')
 
 const app = express()
 
@@ -33,7 +35,17 @@ app.use(cookieSession({
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
+
+app.use(middlewares.redirectIfNotLogin)
+
+if (process.env.NODE_ENV === 'development') {
+  app.get('/peek', (req, res) => {
+    res.json(req.session)
+  })
+}
+
 app.use('/search', search)
+app.use('/maps', maps)
 app.use('/contacts', contacts)
 
 // catch 404 and forward to error handler

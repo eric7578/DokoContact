@@ -22,10 +22,4 @@ router.get('/oauth2callback', middlewares.redirectIfLogin, wrapper(async (req, r
   res.redirect('/search')
 }))
 
-if (process.env.NODE_ENV === 'development') {
-  router.get('/peek', middlewares.redirectIfNotLogin, (req, res) => {
-    res.json(req.session)
-  })
-}
-
 module.exports = router

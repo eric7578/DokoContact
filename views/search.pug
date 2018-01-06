@@ -8,7 +8,7 @@ block content
     label(for='search') 關鍵字快篩
     input#search.form-control(type='text', placeholder='輸入關鍵字')
     small.form-text.text-muted 關鍵字會搜尋所有欄位，姓名、地址、組織等。
-  form(method='post', action='/search')
+  form(method='post', action='/maps/preview')
     .suggests
       label.suggest-item.template.hide
         input.include-suggest(type='checkbox', name='contacts[]')
