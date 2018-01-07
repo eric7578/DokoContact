@@ -12,13 +12,13 @@ router.post('/preview', wrapper(async (req, res) => {
 
   let contacts = await Promise.all(
     contactIds.map(contactId =>
-      contact.getPeople(req.session, contactId)
+      contact.getPeople(req.user.token, contactId)
     )
   )
 
   let contactInGroups = await Promise.all(
     groupIds.map(groupId =>
-      contact.getPeopleUnderContactGroup(req.session, groupId)
+      contact.getPeopleUnderContactGroup(req.user.token, groupId)
     )
   )
   contactInGroups = _.flatten(contactInGroups)

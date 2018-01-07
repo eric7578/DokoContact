@@ -6,11 +6,35 @@ const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const cookieSession = require('cookie-session')
-const index = require('./routes/index')
+const passport = require('passport')
+const GoogleStrategy = require('passport-google-oauth20').Strategy
+const _ = require('lodash')
+const { ensureLoggedIn, ensureLoggedOut } = require('connect-ensure-login')
 const search = require('./routes/search')
 const maps = require('./routes/maps')
 const contacts = require('./routes/contacts')
-const middlewares = require('./routes/middlewares')
+
+passport.use(new GoogleStrategy({
+  clientID: process.env.OAUTH_ID,
+  clientSecret: process.env.OAUTH_SECRET,
+  callbackURL: process.env.REDIRECT_URL
+}, (token, tokenSecret, profile, done) => {
+  const user = {
+    id: profile.id,
+    displayName: profile.displayName,
+    photos: _.get(profile, 'photos[0].value'),
+    token
+  }
+  done(null, user)
+}))
+
+passport.serializeUser((user, cb) => {
+  cb(null, user)
+})
+
+passport.deserializeUser((user, cb) => {
+  cb(null, user)
+})
 
 const app = express()
 
@@ -29,15 +53,34 @@ app.use(cookieSession({
   secret: process.env.SESSION_SECRET,
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
+
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', index)
+app.use(passport.initialize())
+app.use(passport.session())
 
-app.use(middlewares.redirectIfNotLogin)
+app.get('/', ensureLoggedOut('/search'), (req, res, next) => {
+  res.render('index', {
+    title: 'DokoContact'
+  })
+})
+
+app.get('/auth/google', passport.authenticate('google', {
+  scope: [
+    'https://www.googleapis.com/auth/contacts.readonly',
+    'https://www.googleapis.com/auth/userinfo.profile'
+  ]
+}))
+
+app.get('/oauth2callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
+  res.redirect('/search');
+})
+
+app.use(ensureLoggedIn('/'))
 
 if (process.env.NODE_ENV === 'development') {
-  app.get('/peek', (req, res) => {
-    res.json(req.session)
+  app.get('/whoami', (req, res) => {
+    res.json(req.user)
   })
 }
 
