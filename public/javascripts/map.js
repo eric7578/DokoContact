@@ -10,7 +10,8 @@ function initialized () {
   // 取得放大比率
   var zoom = getBoundsZoomLevel(bounds);
 
-  createMap(center, zoom);
+  var map = createMap(center, zoom);
+  createPlugins(map);
 }
 
 // https://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
@@ -108,4 +109,54 @@ function insertInfo ($node, value, seperator) {
     $node.textContent = '';
     $node.style.display = 'none';
   }
+}
+
+function createPlugins (map) {
+  var rootNode = map.getDiv();
+  var plugin = rootNode.dataset
+    ? JSON.parse(rootNode.dataset.mapPlugin)
+    : JSON.parse(rootNode.getAttribute('data-map-plugin'));
+  if (plugin.preview) {
+    initializeSavingForm(map);
+  }
+}
+
+function initializeSavingForm (map) {
+  const $savingForm = document.createElement('form');
+  $savingForm.id = 'saving-form';
+  $savingForm.className = 'form-inline';
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push($savingForm);
+
+  const $titleInput = document.createElement('input');
+  $titleInput.className = 'map-name form-control';
+  $titleInput.type = 'text';
+  $titleInput.placeholder = '地圖名稱';
+  $savingForm.appendChild($titleInput);
+
+  const $submit = document.createElement('input');
+  $submit.className = 'btn btn-primary';
+  $submit.type = 'submit';
+  $submit.value = '另存新地圖';
+  $savingForm.appendChild($submit);
+
+  $savingForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/maps');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        var mapId = JSON.parse(xhr.responseText);
+        window.location = '/maps/' + mapId;
+      } else {
+        sendLogs(xhr.responseText);
+        alert('儲存失敗！');
+      }
+    };
+    xhr.send(JSON.stringify({
+      title: $titleInput.value,
+      pins: window.PINS
+    }));
+  });
 }

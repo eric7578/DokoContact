@@ -25,7 +25,24 @@ router.post('/preview', wrapper(async (req, res) => {
 
   const pins = await map.makePins(contactInGroups)
 
-  res.render('map-view', { pins })
+  res.render('map-view', {
+    preview: true,
+    pins
+  })
+}))
+
+router.post('/', wrapper(async (req, res) => {
+  const generatedMap = await map.makeMap(req.body.title, req.body.pins)
+  res.json(generatedMap._id)
+}))
+
+router.get('/:mapId', wrapper(async (req, res) => {
+  const foundMap = await map.findMapById(req.params.mapId)
+
+  res.render('map-view', {
+    title: foundMap.title,
+    pins: foundMap.pins
+  })
 }))
 
 module.exports = router

@@ -1,13 +1,15 @@
 const mongoose = require('mongoose')
 
 const pinSchema = mongoose.Schema({
-  lat: {
-    type: Number,
-    required: true
-  },
-  lng: {
-    type: Number,
-    required: true
+  position: {
+    lat: {
+      type: Number,
+      required: true
+    },
+    lng: {
+      type: Number,
+      required: true
+    }
   },
   name: String,
   companyName: String,
@@ -17,6 +19,10 @@ const pinSchema = mongoose.Schema({
 })
 
 const mapSchema = mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
   created: {
     type: Date,
     required: true,

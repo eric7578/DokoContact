@@ -1,11 +1,13 @@
 const axios = require('axios')
 const _ = require('lodash')
 const { stringify } = require('querystring')
+const moment = require('moment')
 const { Map } = require('../models')
 
 const fromAddressToLatLng = address => {
   const query = stringify({
     key: process.env.GEOCODING_KEY,
+    language: 'zh-TW',
     address
   })
   return axios
@@ -45,6 +47,27 @@ const makePins = async contacts => {
   )
 }
 
+const makeMap = async (title, pins) => {
+  const map = new Map()
+  map.created = Date.now()
+  map.title = title || generateMapTitle()
+  map.pins = pins
+  await map.save()
+  return map.toJSON()
+}
+
+const generateMapTitle = () => {
+  const time = moment().format('YYYY-MM-DD HH:mm')
+  return `未命名[${time}]`
+}
+
+const findMapById = async mapId => {
+  const map = await Map.findById(mapId)
+  return map.toJSON()
+}
+
 module.exports = {
+  findMapById,
+  makeMap,
   makePins
 }

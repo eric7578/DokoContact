@@ -31,3 +31,7 @@ html, body {
   color: #666;
   margin: 3px 0;
 }
+
+.map-name {
+  margin-right: 10px;
+}
