@@ -23,7 +23,7 @@ router.post('/preview', wrapper(async (req, res) => {
   )
   contactInGroups = _.flatten(contactInGroups)
 
-  const pins = await map.makePins(contactInGroups)
+  const pins = await map.makePins(contacts.concat(contactInGroups))
 
   res.render('map-view', {
     preview: true,
