@@ -32,7 +32,7 @@ router.post('/preview', wrapper(async (req, res) => {
 }))
 
 router.post('/', wrapper(async (req, res) => {
-  const generatedMap = await map.makeMap(req.body.title, req.body.pins)
+  const generatedMap = await map.makeMap(req.user.id, req.body.title, req.body.pins)
   res.json(generatedMap._id)
 }))
 

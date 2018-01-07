@@ -19,6 +19,10 @@ const pinSchema = mongoose.Schema({
 })
 
 const mapSchema = mongoose.Schema({
+  owner: {
+    type: String,
+    required: true
+  },
   title: {
     type: String,
     required: true
@@ -28,7 +32,6 @@ const mapSchema = mongoose.Schema({
     required: true,
     default: Date.now
   },
-  visited: Date,
   pins: [pinSchema]
 })
 

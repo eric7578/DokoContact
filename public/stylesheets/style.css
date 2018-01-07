@@ -29,3 +29,13 @@
 .contact-group {
   display: block;
 }
+
+.card {
+  margin: 10px 0;
+}
+
+.history-created {
+  color: #999;
+  display: block;
+  font-size: 12px;
+}

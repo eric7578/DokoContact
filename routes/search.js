@@ -8,9 +8,11 @@ const router = express.Router()
 
 router.get('/', wrapper(async (req, res) => {
   const contactGroups = await contact.getContactGroups(req.user.token)
+  const ownMaps = await map.findMapsByOwner(req.user.id)
   res.render('search', {
     title: 'DokoContact',
-    contactGroups
+    contactGroups,
+    ownMaps
   })
 }))
 

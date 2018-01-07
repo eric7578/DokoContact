@@ -47,8 +47,9 @@ const makePins = async contacts => {
   )
 }
 
-const makeMap = async (title, pins) => {
+const makeMap = async (owner, title, pins) => {
   const map = new Map()
+  map.owner = owner
   map.created = Date.now()
   map.title = title || generateMapTitle()
   map.pins = pins
@@ -66,8 +67,20 @@ const findMapById = async mapId => {
   return map.toJSON()
 }
 
+const findMapsByOwner = async owner => {
+  const maps = await Map.find({ owner })
+    .select('_id title created')
+    .sort({ created: -1 })
+  return maps.map(map => {
+    const mapData = map.toJSON()
+    mapData.created = moment(mapData.created).format('YYYY-MM-DD HH:mm')
+    return mapData
+  })
+}
+
 module.exports = {
   findMapById,
+  findMapsByOwner,
   makeMap,
   makePins
 }

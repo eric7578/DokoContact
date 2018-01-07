@@ -5,24 +5,36 @@ block css
 
 block content
   .container
-    .form-group
-      label(for='search') 關鍵字快篩
-      input#search.form-control(type='text', placeholder='輸入關鍵字')
-      small.form-text.text-muted 關鍵字會搜尋所有欄位，姓名、地址、組織等。
-    form(method='post', action='/maps/preview')
-      .suggests
-        label.suggest-item.template.hide
-          input.include-suggest(type='checkbox', name='contacts[]')
-          span.name
-          span.job
-      if contactGroups
-        label 選擇群組所有成員
+    if ownMaps && ownMaps.length > 0
+      .card
+        .card-body
+          h5.card-title 歷史地圖
+          ul.list-group
+            each ownMap in ownMaps
+              li.list-group-item
+                a(href='/maps/' + ownMap._id)= ownMap.title
+                span.history-created= 'Created at' + ownMap.created
+    .card
+      .card-body
+        h5.card-title 建立新地圖
         .form-group
-          each contactGroup, index in contactGroups
-            label.contact-group
-              input.include-group(type='checkbox', name='groups[]' value=contactGroup.id)
-              = contactGroup.title
-      button.btn.btn-primary(type=submit) 送出
+          label(for='search') 關鍵字快篩
+          input#search.form-control(type='text', placeholder='輸入關鍵字')
+          small.form-text.text-muted 關鍵字會搜尋所有欄位，姓名、地址、組織等。
+        form(method='post', action='/maps/preview')
+          .suggests
+            label.suggest-item.template.hide
+              input.include-suggest(type='checkbox', name='contacts[]')
+              span.name
+              span.job
+          if contactGroups
+            label 選擇群組所有成員
+            .form-group
+              each contactGroup in contactGroups
+                label.contact-group
+                  input.include-group(type='checkbox', name='groups[]' value=contactGroup.id)
+                  = contactGroup.title
+          button.btn.btn-primary(type=submit) 送出
 
 block scripts
   script(src='/javascripts/search.js')
