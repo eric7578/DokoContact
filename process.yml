@@ -1,0 +1,5 @@
+apps:
+  - name: ap
+    script: bin/www
+    instances: 4
+    exec_mode: cluster
