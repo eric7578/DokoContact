@@ -26,6 +26,7 @@ const makePin = contact => {
   return fromAddressToLatLng(contact['gd:postalAddress'])
     .then(geocode => {
       return {
+        success: true,
         position: {
           lat: _.get(geocode, 'geometry.location.lat'),
           lng: _.get(geocode, 'geometry.location.lng')
@@ -37,15 +38,35 @@ const makePin = contact => {
         postalAddress: geocode.formatted_address
       }
     })
+    .catch(err => {
+      return {
+        success: false,
+        error: err
+      }
+    })
 }
 
 const makePins = async contacts => {
-  return Promise.all(
-    contacts
-      .filter(contact => contact['gd:postalAddress'])
-      .map(contact => makePin(contact))
-  )
+  const allContacts = contacts.filter(contact => contact['gd:postalAddress'])
+  let responses = []
+  while (allContacts.length > 0) {
+    await delay(5000)
+    const reqContacts = allContacts.splice(0, 40)
+    const queryResults = await Promise.all(reqContacts.map(contact => makePin(contact)))
+    const successResults = queryResults.filter(result => {
+      if (!result.success) {
+        console.warn('Geo encoding failed.')
+        console.error(result.error + '\n')
+
+      }
+      return result.success
+    })
+    responses = responses.concat(successResults)
+  }
+  return responses
 }
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const makeMap = async (owner, title, pins) => {
   const map = new Map()
