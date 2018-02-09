@@ -1,12 +1,13 @@
 const express = require('express')
 const _ = require('lodash')
+const { ensureLoggedIn } = require('connect-ensure-login')
 const wrapper = require('./wrapper')
 const contact = require('../services/contact')
 const map = require('../services/map')
 
 const router = express.Router()
 
-router.post('/preview', wrapper(async (req, res) => {
+router.post('/preview', ensureLoggedIn('/'), wrapper(async (req, res) => {
   const contactIds = _.get(req, 'body.contacts', [])
   const groupIds = _.get(req, 'body.groups', [])
 
@@ -31,7 +32,7 @@ router.post('/preview', wrapper(async (req, res) => {
   })
 }))
 
-router.post('/', wrapper(async (req, res) => {
+router.post('/', ensureLoggedIn('/'), wrapper(async (req, res) => {
   const generatedMap = await map.makeMap(req.user.id, req.body.title, req.body.pins)
   res.json(generatedMap._id)
 }))

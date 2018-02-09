@@ -76,17 +76,15 @@ app.get('/oauth2callback', passport.authenticate('google', { failureRedirect: '/
   res.redirect('/search');
 })
 
-app.use(ensureLoggedIn('/'))
-
 if (process.env.NODE_ENV === 'development') {
-  app.get('/whoami', (req, res) => {
+  app.get('/whoami', ensureLoggedIn('/'), (req, res) => {
     res.json(req.user)
   })
 }
 
-app.use('/search', search)
+app.use('/search', ensureLoggedIn('/'), search)
 app.use('/maps', maps)
-app.use('/contacts', contacts)
+app.use('/contacts', ensureLoggedIn('/'), contacts)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -97,8 +95,6 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-  console.error(err)
-
   // set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
