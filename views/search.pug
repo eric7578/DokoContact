@@ -12,7 +12,7 @@ block content
           ul.list-group
             each ownMap in ownMaps
               li.list-group-item
-                a(href='/maps/' + ownMap._id)= ownMap.title
+                a(href='/maps/' + ownMap.exposedId)= ownMap.title
                 span.history-created= 'Created at' + ownMap.created
     .card
       .card-body

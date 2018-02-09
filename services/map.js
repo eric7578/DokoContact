@@ -2,6 +2,7 @@ const axios = require('axios')
 const _ = require('lodash')
 const { stringify } = require('querystring')
 const moment = require('moment')
+const bcrypt = require('bcrypt')
 const { Map } = require('../models')
 
 const fromAddressToLatLng = address => {
@@ -57,7 +58,6 @@ const makePins = async contacts => {
       if (!result.success) {
         console.warn('Geo encoding failed.')
         console.error(result.error + '\n')
-
       }
       return result.success
     })
@@ -74,6 +74,7 @@ const makeMap = async (owner, title, pins) => {
   map.created = Date.now()
   map.title = title || generateMapTitle()
   map.pins = pins
+  map.exposedId = await bcrypt.hash(map._id.toString(), 10)
   await map.save()
   return map.toJSON()
 }
@@ -84,13 +85,13 @@ const generateMapTitle = () => {
 }
 
 const findMapById = async mapId => {
-  const map = await Map.findById(mapId)
+  const map = await Map.findOne({ exposedId: mapId })
   return map.toJSON()
 }
 
 const findMapsByOwner = async owner => {
   const maps = await Map.find({ owner })
-    .select('_id title created')
+    .select('exposedId title created')
     .sort({ created: -1 })
   return maps.map(map => {
     const mapData = map.toJSON()

@@ -9,6 +9,7 @@ const cookieSession = require('cookie-session')
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const _ = require('lodash')
+const helmet = require('helmet')
 const { ensureLoggedIn, ensureLoggedOut } = require('connect-ensure-login')
 const search = require('./routes/search')
 const maps = require('./routes/maps')
@@ -37,6 +38,8 @@ passport.deserializeUser((user, cb) => {
 })
 
 const app = express()
+
+app.use(helmet())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -95,17 +98,14 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
-
-  // render the error page
-  if (err.status) {
-    res.status(err.status)
-  } else {
-    req.logout()
-    res.redirect('/')
+  err.status = err.status || 500
+  if (process.env.NODE_ENV !== 'development') {
+    err.stack = ''
+    err.message = 'Something happend!'
   }
+  res.render('error', {
+    error: err
+  })
 })
 
 module.exports = app

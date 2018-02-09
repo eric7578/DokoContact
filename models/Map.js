@@ -19,6 +19,10 @@ const pinSchema = mongoose.Schema({
 })
 
 const mapSchema = mongoose.Schema({
+  exposedId: {
+    type: String,
+    required: true
+  },
   owner: {
     type: String,
     required: true

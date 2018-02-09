@@ -34,7 +34,7 @@ router.post('/preview', ensureLoggedIn('/'), wrapper(async (req, res) => {
 
 router.post('/', ensureLoggedIn('/'), wrapper(async (req, res) => {
   const generatedMap = await map.makeMap(req.user.id, req.body.title, req.body.pins)
-  res.json(generatedMap._id)
+  res.json(generatedMap.exposedId)
 }))
 
 router.get('/:mapId', wrapper(async (req, res) => {
